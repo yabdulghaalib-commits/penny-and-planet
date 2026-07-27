@@ -1,0 +1,11 @@
+{
+  "slug": "penny-and-planet-team",
+  "name": "Penny & Planet Team",
+  "avatarUrl": "https://picsum.photos/seed/pp-author-team/200/200",
+  "bio": "Our editorial team researches and writes practical, no-nonsense guides on money and sustainable living.",
+  "expertise": ["Budgeting", "Saving Money", "Sustainable Living"],
+  "socialLinks": [
+    { "platform": "instagram", "url": "https://instagram.com/pennyandplanet" },
+    { "platform": "pinterest", "url": "https://pinterest.com/pennyandplanet" }
+  ]
+}

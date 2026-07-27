@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-sand-300;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-sand-100 text-ink font-body text-body-base antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display text-ink font-normal;
+  }
+
+  ::selection {
+    @apply bg-forest-200 text-forest-800;
+  }
+
+  /* Visible, on-brand keyboard focus for every interactive element */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    @apply outline-none ring-2 ring-forest-500 ring-offset-2 ring-offset-sand-100 rounded-sm;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Long-form article typography, reused wherever we render article body content */
+  .prose-editorial {
+    @apply max-w-prose text-body-lg text-ink-soft;
+  }
+
+  .prose-editorial p + p {
+    @apply mt-5;
+  }
+
+  .prose-editorial h2 {
+    @apply text-display-sm mt-12 mb-4 text-ink;
+  }
+
+  .prose-editorial h2,
+  .prose-editorial h3 {
+    @apply scroll-mt-28;
+  }
+
+  .prose-editorial h2 .heading-anchor,
+  .prose-editorial h3 .heading-anchor {
+    @apply relative ml-2 inline-block text-ink-muted no-underline opacity-0 transition-opacity duration-150 hover:text-forest-600 focus-visible:opacity-100;
+  }
+
+  .prose-editorial h2:hover .heading-anchor,
+  .prose-editorial h3:hover .heading-anchor {
+    @apply opacity-100;
+  }
+
+  .prose-editorial .heading-anchor[data-copied='true']::after {
+    content: 'Copied!';
+    @apply absolute left-1/2 top-full z-10 mt-1 -translate-x-1/2 whitespace-nowrap rounded-sm bg-ink px-2 py-1 font-body text-xs text-white;
+  }
+
+  .prose-editorial a {
+    @apply text-forest-600 underline decoration-forest-300 underline-offset-4 hover:decoration-forest-600 transition-colors;
+  }
+
+  .prose-editorial :not(pre) > code {
+    @apply rounded-sm bg-sand-200 px-1.5 py-0.5 font-mono text-[0.875em] text-forest-700;
+  }
+
+  .prose-editorial table {
+    @apply my-6 w-full border-collapse overflow-hidden rounded-md text-left text-sm;
+  }
+
+  .prose-editorial thead {
+    @apply bg-forest-700 text-white;
+  }
+
+  .prose-editorial th {
+    @apply px-4 py-3 font-body font-semibold;
+  }
+
+  .prose-editorial td {
+    @apply border-t border-sand-300 px-4 py-3 text-ink-soft;
+  }
+
+  .prose-editorial tbody tr:nth-child(even) {
+    @apply bg-sand-100;
+  }
+
+  .prose-editorial ul {
+    @apply my-5 list-disc space-y-2 pl-6;
+  }
+
+  .prose-editorial ol {
+    @apply my-5 list-decimal space-y-2 pl-6;
+  }
+
+  .prose-editorial blockquote:not(.not-prose) {
+    @apply my-6 border-l-4 border-sand-300 pl-5 italic text-ink-muted;
+  }
+
+  /* Reusable "eyebrow" label used above section headings and on cards */
+  .eyebrow {
+    @apply font-mono text-eyebrow uppercase tracking-widest text-forest-500;
+  }
+
+  /* Skip link for keyboard users */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-full focus:bg-forest-700 focus:px-5 focus:py-2.5 focus:text-white focus:shadow-raised;
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "slug": "maya-chen",
+  "name": "Maya Chen",
+  "avatarUrl": "https://picsum.photos/seed/pp-author-maya/200/200",
+  "bio": "Maya writes about the intersection of personal finance and sustainable living, drawing on a decade of experience helping households build better money habits.",
+  "credentials": "Accredited Financial Counselor (AFC)",
+  "expertise": ["Debt Payoff", "Financial Counseling", "Eco-Friendly Living"],
+  "socialLinks": [
+    { "platform": "linkedin", "url": "https://linkedin.com/in/mayachen" },
+    { "platform": "twitter", "url": "https://twitter.com/mayachenwrites" }
+  ]
+}
