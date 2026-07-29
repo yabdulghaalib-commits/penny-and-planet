@@ -5,7 +5,7 @@ import { getAllProducts } from '@/lib/content/products';
 
 export const metadata: Metadata = {
   title: 'Shop',
-  description: 'Digital planners, spreadsheets, and workbooks for money and sustainable living — coming soon.',
+  description: 'Digital planners, spreadsheets, and workbooks for money and sustainable living, coming soon.',
   alternates: { canonical: '/shop' },
 };
 

@@ -23,7 +23,7 @@ export function RecommendedProduct({ name, description, imageUrl, href, ctaLabel
         <p className="font-display text-base text-ink">{name}</p>
         <p className="mt-1 text-sm text-ink-muted">{description}</p>
         <p className="mt-1.5 text-xs text-ink-muted">
-          Affiliate link — see our <a href="/disclosure" className="underline decoration-sand-300 underline-offset-4">Disclosure</a>.
+          Affiliate link. See our <a href="/disclosure" className="underline decoration-sand-300 underline-offset-4">Disclosure</a>.
         </p>
       </div>
       <a

@@ -27,6 +27,6 @@ export async function submitContactForm(values: ContactFormValues): Promise<Cont
 
   return {
     success: true,
-    message: "Thanks for reaching out — we'll get back to you within 2–3 business days.",
+    message: "Thanks for reaching out. We'll get back to you within 2–3 business days.",
   };
 }

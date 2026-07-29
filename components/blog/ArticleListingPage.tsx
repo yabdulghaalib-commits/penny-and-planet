@@ -53,7 +53,7 @@ export function ArticleListingPage({
           <Pagination currentPage={currentPage} totalPages={totalPages} hrefForPage={hrefForPage} />
         </>
       ) : (
-        <p className="text-center text-ink-muted">No articles here yet — check back soon.</p>
+        <p className="text-center text-ink-muted">No articles here yet. Check back soon.</p>
       )}
     </>
   );

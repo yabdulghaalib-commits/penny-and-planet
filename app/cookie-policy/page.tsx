@@ -36,7 +36,7 @@ export default function CookiePolicyPage() {
 
       <LegalSectionBlock id="essential-cookies" title="Essential Cookies">
         <p>
-          These cookies are necessary for the site to function — for example, remembering your cookie
+          These cookies are necessary for the site to function, for example, remembering your cookie
           preferences or keeping a form submission working as you move between steps. The site cannot function
           properly without them, and they cannot be disabled through our site settings.
         </p>
@@ -44,7 +44,7 @@ export default function CookiePolicyPage() {
 
       <LegalSectionBlock id="performance-cookies" title="Performance & Analytics Cookies">
         <p>
-          These cookies help us understand how visitors use Penny and Planet — which articles are popular,
+          These cookies help us understand how visitors use Penny and Planet: which articles are popular,
           how people navigate between pages, and where visitors run into friction. This helps us improve the
           site over time. Information collected here is aggregated and not used to identify you personally.
         </p>
@@ -52,7 +52,7 @@ export default function CookiePolicyPage() {
 
       <LegalSectionBlock id="preference-cookies" title="Preference Cookies">
         <p>
-          These cookies remember choices you make on the site — such as a light/dark mode preference — so you
+          These cookies remember choices you make on the site, such as a light/dark mode preference, so you
           don't have to reselect them on every visit.
         </p>
       </LegalSectionBlock>

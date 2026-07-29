@@ -59,7 +59,7 @@ export default function CollectionPage({ params }: CollectionPageProps) {
             ))}
           </div>
         ) : (
-          <p className="mt-12 text-center text-ink-muted">No articles in this collection yet — check back soon.</p>
+          <p className="mt-12 text-center text-ink-muted">No articles in this collection yet. Check back soon.</p>
         )}
       </Container>
     </div>

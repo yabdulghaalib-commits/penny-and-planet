@@ -23,7 +23,7 @@ export default function DisclosurePage() {
       eyebrow="Legal"
       title="Disclosure"
       lastUpdated="July 25, 2026"
-      intro="Trust is the foundation of everything we publish. This page explains, plainly, how Penny and Planet may make money from this site — now or in the future — and the standards we hold ourselves to regardless."
+      intro="Trust is the foundation of everything we publish. This page explains, plainly, how Penny and Planet may make money from this site, now or in the future, and the standards we hold ourselves to regardless."
       sections={sections}
     >
       <LegalSectionBlock id="affiliate-relationships" title="Affiliate Relationships">
@@ -52,7 +52,7 @@ export default function DisclosurePage() {
       <LegalSectionBlock id="product-reviews" title="Product Reviews">
         <p>
           When we review or recommend a specific product or service, that recommendation reflects our genuine
-          assessment based on research, use, or expert input — not the size of a potential commission.
+          assessment based on research, use, or expert input, not the size of a potential commission.
         </p>
       </LegalSectionBlock>
 
@@ -65,7 +65,7 @@ export default function DisclosurePage() {
       </LegalSectionBlock>
 
       <LegalSectionBlock id="recommendation-standards" title="Our Recommendation Standards">
-        <p>Before recommending anything — a product, service, app, or strategy — we aim to:</p>
+        <p>Before recommending anything, whether a product, service, app, or strategy, we aim to:</p>
         <ul>
           <li>Verify claims against credible, independent sources wherever possible</li>
           <li>Disclose any financial relationship clearly and prominently</li>
@@ -75,7 +75,7 @@ export default function DisclosurePage() {
 
       <LegalSectionBlock id="honest-opinions" title="Our Commitment to Honest Opinions">
         <p>
-          If something isn't worth your money or your time, we'll say so — even if it means walking away from a
+          If something isn't worth your money or your time, we'll say so, even if it means walking away from a
           partnership opportunity. That standard doesn't change based on how the site is monetized.
         </p>
       </LegalSectionBlock>

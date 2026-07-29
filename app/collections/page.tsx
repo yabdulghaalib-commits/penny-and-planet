@@ -18,7 +18,7 @@ export default function CollectionsIndexPage() {
           <p className="eyebrow">Learning paths</p>
           <h1 className="mt-2 text-display-md text-ink sm:text-display-lg">Featured Collections</h1>
           <p className="mt-4 text-body-base text-ink-muted">
-            Curated groups of articles that walk you through a topic step by step — pick a path and work
+            Curated groups of articles that walk you through a topic step by step. Pick a path and work
             through it at your own pace.
           </p>
         </div>

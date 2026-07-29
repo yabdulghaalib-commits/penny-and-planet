@@ -59,7 +59,7 @@ export function Footer() {
             <span className="font-display text-xl text-white">Penny &amp; Planet</span>
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-sand-200">
-            Practical, research-driven guidance for building wealth and living more sustainably — one
+            Practical, research-driven guidance for building wealth and living more sustainably, one
             intentional decision at a time.
           </p>
           <ul className="mt-6 flex items-center gap-4">

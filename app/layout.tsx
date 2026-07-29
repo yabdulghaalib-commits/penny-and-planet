@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     template: '%s | Penny and Planet',
   },
   description:
-    'Penny and Planet helps you build financial wellbeing while living more sustainably — practical guides on budgeting, saving, investing, and eco-friendly living.',
+    'Penny and Planet helps you build financial wellbeing while living more sustainably: practical guides on budgeting, saving, investing, and eco-friendly living.',
   openGraph: {
     type: 'website',
     url: siteConfig.url,

@@ -14,7 +14,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-6 text-body-lg text-ink-muted">
-            Penny and Planet helps you manage money wisely, save more, and invest with confidence — while
+            Penny and Planet helps you manage money wisely, save more, and invest with confidence, while
             spending less on things that don&apos;t matter and reducing your impact on the planet along the
             way.
           </p>

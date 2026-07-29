@@ -96,7 +96,7 @@ export function SearchExperience({ categories, tags, suggestedArticles }: Search
           <p className="eyebrow">Find what you need</p>
           <h1 className="mt-2 text-display-md text-ink sm:text-display-lg">Search Penny and Planet</h1>
           <p className="mt-4 text-body-base text-ink-muted">
-            Search by title, topic, category, tag, or author — start typing and results appear instantly.
+            Search by title, topic, category, tag, or author. Start typing and results appear instantly.
           </p>
         </div>
 

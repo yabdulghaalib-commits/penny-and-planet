@@ -5,7 +5,7 @@ import { FaqList } from '@/components/contact/FaqList';
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'Get in touch with the Penny and Planet team — questions, collaborations, and feedback welcome.',
+  description: 'Get in touch with the Penny and Planet team: questions, collaborations, and feedback welcome.',
   alternates: { canonical: '/contact' },
 };
 
@@ -13,7 +13,7 @@ const FAQ_ITEMS = [
   {
     question: 'Can I suggest a blog topic?',
     answer:
-      "Absolutely — reader suggestions shape a lot of what we cover. Use the form below with \"Topic suggestion\" as the subject and tell us what you'd like to see.",
+      "Absolutely. Reader suggestions shape a lot of what we cover. Use the form below with \"Topic suggestion\" as the subject and tell us what you'd like to see.",
   },
   {
     question: 'Can I collaborate with Penny and Planet?',
@@ -28,7 +28,7 @@ const FAQ_ITEMS = [
   {
     question: 'How can I report an error in an article?',
     answer:
-      'We take accuracy seriously and appreciate corrections. Include the article title, a link if you have it, and what you believe is incorrect — we review and fix these quickly.',
+      'We take accuracy seriously and appreciate corrections. Include the article title, a link if you have it, and what you believe is incorrect. We review and fix these quickly.',
   },
   {
     question: 'How can I contact you regarding partnerships?',
@@ -45,7 +45,7 @@ export default function ContactPage() {
           <p className="eyebrow">Get in touch</p>
           <h1 className="mt-2 text-display-md text-ink sm:text-display-lg">Contact Us</h1>
           <p className="mt-4 text-body-base text-ink-muted">
-            Questions, topic suggestions, corrections, or partnership ideas — we&apos;d genuinely like to hear
+            Questions, topic suggestions, corrections, or partnership ideas: we&apos;d genuinely like to hear
             from you. Fill out the form below and we&apos;ll get back to you within 2–3 business days.
           </p>
         </div>

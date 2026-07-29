@@ -22,13 +22,13 @@ export default function DisclaimerPage() {
       eyebrow="Legal"
       title="Disclaimer"
       lastUpdated="July 25, 2026"
-      intro="Please read this page carefully — it explains the limits of what Penny and Planet's content can and should be used for."
+      intro="Please read this page carefully. It explains the limits of what Penny and Planet's content can and should be used for."
       sections={sections}
     >
       <LegalSectionBlock id="educational-purposes" title="Educational Purposes Only">
         <p>
-          All content published on Penny and Planet — including articles, guides, worksheets, and downloadable
-          resources — is intended for general educational and informational purposes only. It is not tailored
+          All content published on Penny and Planet, including articles, guides, worksheets, and downloadable
+          resources, is intended for general educational and informational purposes only. It is not tailored
           to your individual financial situation, goals, or risk tolerance.
         </p>
       </LegalSectionBlock>
@@ -60,7 +60,7 @@ export default function DisclaimerPage() {
       <LegalSectionBlock id="no-guarantees" title="No Guarantees">
         <p>
           We make reasonable efforts to keep our content accurate and current, but we make no guarantees about
-          outcomes. Any results mentioned in an article — savings figures, payback periods, investment returns —
+          outcomes. Any results mentioned in an article, such as savings figures, payback periods, or investment returns,
           are illustrative and will vary based on individual circumstances.
         </p>
       </LegalSectionBlock>

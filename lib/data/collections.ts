@@ -27,7 +27,7 @@ export const collections: Collection[] = [
   {
     slug: 'emergency-fund-essentials',
     title: 'Emergency Fund Essentials',
-    description: 'Everything you need to build — and protect — your safety net.',
+    description: 'Everything you need to build and protect your safety net.',
     rule: { tags: ['emergency-fund', 'saving-money'] },
   },
   {

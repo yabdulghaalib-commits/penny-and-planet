@@ -36,7 +36,7 @@ export default function TermsOfUsePage() {
 
       <LegalSectionBlock id="intellectual-property" title="Intellectual Property">
         <p>
-          All content on this site — including articles, graphics, illustrations, and the overall design — is
+          All content on this site, including articles, graphics, illustrations, and the overall design, is
           the property of Penny and Planet unless otherwise credited, and is protected by copyright. You may
           quote brief excerpts with proper attribution and a link back to the original article, but may not
           republish full articles without written permission.

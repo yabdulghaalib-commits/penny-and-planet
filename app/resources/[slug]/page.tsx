@@ -85,7 +85,7 @@ export default function ResourcePage({ params }: ResourcePageProps) {
             <div className="mt-8 rounded-lg border border-sand-300 bg-sand-100 p-5">
               <p className="text-sm font-medium text-ink">Want more free resources like this?</p>
               <p className="mt-1 text-sm text-ink-muted">
-                Join the newsletter for new planners, trackers, and guides as we publish them — totally optional.
+                Join the newsletter for new planners, trackers, and guides as we publish them. Totally optional.
               </p>
               <div className="mt-3">
                 <SidebarNewsletterForm />

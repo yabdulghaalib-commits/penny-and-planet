@@ -27,7 +27,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
           <p className="eyebrow mt-6">Something went wrong</p>
           <h1 className="mt-2 text-display-md text-ink">We hit a snag loading this page.</h1>
           <p className="mt-4 text-body-base text-ink-muted">
-            Nothing you did caused this — please try again, or head back to the homepage.
+            Nothing you did caused this. Please try again, or head back to the homepage.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button onClick={reset} size="lg">

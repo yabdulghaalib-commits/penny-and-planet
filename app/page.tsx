@@ -8,7 +8,7 @@ import { NewsletterSection } from '@/components/sections/NewsletterSection';
 export const metadata: Metadata = {
   title: 'Penny and Planet — Money & Sustainable Living',
   description:
-    'Practical, research-driven guidance for building wealth while living more sustainably — budgeting, saving, investing, and eco-friendly living, made approachable.',
+    'Practical, research-driven guidance for building wealth while living more sustainably: budgeting, saving, investing, and eco-friendly living, made approachable.',
   alternates: {
     canonical: '/',
   },

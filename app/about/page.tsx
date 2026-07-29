@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 const CORE_VALUES = [
   {
     title: 'Practicality first',
-    description: 'Every guide has to work in a real budget and a real week — not just in theory.',
+    description: 'Every guide has to work in a real budget and a real week, not just in theory.',
   },
   {
     title: 'Money and planet, together',
@@ -91,7 +91,7 @@ export default function AboutPage() {
                   spare in the first place. Neither felt honest.
                 </p>
                 <p>
-                  So we set out to build something different — practical guides that treat your budget and your
+                  So we set out to build something different: practical guides that treat your budget and your
                   environmental impact as connected, not competing, priorities. Reducing food waste saves money.
                   A smaller, more intentional wardrobe costs less and creates less waste. Building an emergency
                   fund reduces the financial pressure that often pushes people toward less sustainable, more
@@ -99,7 +99,7 @@ export default function AboutPage() {
                 </p>
                 <p>
                   What began as a handful of guides has grown into a full library covering personal finance,
-                  sustainable living, and everything in between — always grounded in what&apos;s actually
+                  sustainable living, and everything in between, always grounded in what&apos;s actually
                   achievable for a real household.
                 </p>
               </div>
@@ -134,7 +134,7 @@ export default function AboutPage() {
               <p className="eyebrow">Our vision</p>
               <p className="mt-3 font-display text-xl leading-snug text-ink">
                 A world where financial wellbeing and environmental responsibility are treated as one
-                lifestyle, not two separate — and often conflicting — pursuits.
+                lifestyle, not two separate, often conflicting, pursuits.
               </p>
             </div>
           </div>
@@ -185,11 +185,11 @@ export default function AboutPage() {
                 <p>
                   We cross-check claims against credible, independent sources before publishing, and we correct
                   errors publicly when we get something wrong. If we ever recommend a specific product or
-                  service, we disclose any financial relationship clearly — see our full{' '}
+                  service, we disclose any financial relationship clearly. See our full{' '}
                   <a href="/disclosure">Disclosure</a> for details.
                 </p>
                 <p>
-                  We&apos;re committed to factual, research-based, and practical advice — not trends dressed up
+                  We&apos;re committed to factual, research-based, and practical advice, not trends dressed up
                   as strategy.
                 </p>
               </div>
@@ -206,7 +206,7 @@ export default function AboutPage() {
               Topics We Cover
             </h2>
             <p className="mt-4 text-body-base text-ink-muted">
-              Everything we publish falls somewhere across these areas — and they&apos;re more connected than
+              Everything we publish falls somewhere across these areas, and they&apos;re more connected than
               they might first appear.
             </p>
           </div>

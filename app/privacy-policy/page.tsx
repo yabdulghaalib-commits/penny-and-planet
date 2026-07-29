@@ -56,7 +56,7 @@ export default function PrivacyPolicyPage() {
 
       <LegalSectionBlock id="analytics" title="Analytics">
         <p>
-          We use privacy-conscious analytics tools to understand aggregate traffic patterns — which articles are
+          We use privacy-conscious analytics tools to understand aggregate traffic patterns: which articles are
           read, how visitors navigate the site, and general audience demographics. This data is analyzed in
           aggregate and is not used to identify you individually.
         </p>
@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
 
       <LegalSectionBlock id="third-party-services" title="Third-Party Services">
         <p>
-          We work with a small number of third-party services to operate the site — for example, an email
+          We work with a small number of third-party services to operate the site, for example, an email
           service provider for newsletter delivery and an analytics provider. These providers only receive the
           information necessary to perform their function and are contractually required to protect it.
         </p>

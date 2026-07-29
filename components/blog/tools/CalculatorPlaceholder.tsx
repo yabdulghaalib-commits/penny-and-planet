@@ -29,7 +29,7 @@ export function CalculatorPlaceholder({ type, description }: CalculatorPlacehold
       </span>
       <p className="mt-3 font-display text-base text-ink">{CALCULATOR_LABELS[type]}</p>
       <p className="mt-1 text-sm text-ink-muted">
-        {description ?? "We're building an interactive version of this tool — check back soon."}
+        {description ?? "We're building an interactive version of this tool. Check back soon."}
       </p>
       <button
         type="button"

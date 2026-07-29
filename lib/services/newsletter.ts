@@ -39,7 +39,7 @@ export async function subscribeToNewsletter(email: string): Promise<NewsletterSu
   }
 
   if (recentlySubscribed.has(normalizedEmail)) {
-    return { success: true, message: "You're already on the list — check your inbox for a confirmation email." };
+    return { success: true, message: "You're already on the list. Check your inbox for a confirmation email." };
   }
 
   recentlySubscribed.add(normalizedEmail);
