@@ -12,11 +12,11 @@ import { getArticlesByAuthor } from '@/lib/content/query';
 import { authorPageHref } from '@/lib/format';
 import { ARTICLES_PER_PAGE } from '@/lib/config/site';
 
-export function AuthorArchiveView({ slug, page }: { slug: string; page: number }) {
+export async function AuthorArchiveView({ slug, page }: { slug: string; page: number }) {
   const author = getAuthorBySlug(slug);
   if (!author) notFound();
 
-  const result = getArticlesByAuthor(author.slug, page, ARTICLES_PER_PAGE);
+  const result = await getArticlesByAuthor(author.slug, page, ARTICLES_PER_PAGE);
   if (page > 1 && page > result.totalPages) notFound();
 
   return (

@@ -9,12 +9,13 @@ import { sortArticles, isArticleSortOption } from '@/lib/content/sorting';
 import { tagPageHref } from '@/lib/format';
 import { ARTICLES_PER_PAGE } from '@/lib/config/site';
 
-export function TagArchiveView({ slug, page, sort }: { slug: string; page: number; sort?: string }) {
-  const tag = getAllTags().find((entry) => entry.slug === slug);
+export async function TagArchiveView({ slug, page, sort }: { slug: string; page: number; sort?: string }) {
+  const tags = await getAllTags();
+  const tag = tags.find((entry) => entry.slug === slug);
   if (!tag) notFound();
 
   const sortOption = isArticleSortOption(sort) ? sort : 'recent';
-  const result = getArticlesByTag(tag.slug, page, ARTICLES_PER_PAGE);
+  const result = await getArticlesByTag(tag.slug, page, ARTICLES_PER_PAGE);
   if (page > 1 && page > result.totalPages) notFound();
   const articles = sortArticles(result.items, sortOption);
   const breadcrumbItems = [{ label: 'Home', href: '/' }, { label: `#${tag.name}` }];

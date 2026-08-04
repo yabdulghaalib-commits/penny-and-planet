@@ -9,18 +9,23 @@ interface PageProps {
   searchParams: { sort?: string };
 }
 
-export function generateStaticParams() {
-  return getAllTags().flatMap((tag) => {
-    const total = getArticlesByTag(tag.slug, 1, ARTICLES_PER_PAGE).totalItems;
-    return getStaticPageNumbers(total, ARTICLES_PER_PAGE).map((page) => ({
-      slug: tag.slug,
-      page: String(page),
-    }));
-  });
+export async function generateStaticParams() {
+  const tags = await getAllTags();
+  const perTagParams = await Promise.all(
+    tags.map(async (tag) => {
+      const total = (await getArticlesByTag(tag.slug, 1, ARTICLES_PER_PAGE)).totalItems;
+      return getStaticPageNumbers(total, ARTICLES_PER_PAGE).map((page) => ({
+        slug: tag.slug,
+        page: String(page),
+      }));
+    }),
+  );
+  return perTagParams.flat();
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const tag = getAllTags().find((entry) => entry.slug === params.slug);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const tags = await getAllTags();
+  const tag = tags.find((entry) => entry.slug === params.slug);
   if (!tag) return {};
 
   return {

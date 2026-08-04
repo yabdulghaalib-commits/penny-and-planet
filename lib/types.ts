@@ -107,6 +107,10 @@ export interface ArticleMeta {
   ogImageUrl?: string;
   downloadableResourceSlug?: string;
   faqItems?: { question: string; answer: string }[];
+  /** Optional Pinterest-specific metadata, prepared for manual Pin creation — never auto-published. */
+  pinterestTitle?: string;
+  pinterestDescription?: string;
+  pinterestImageUrl?: string;
 }
 
 /** Full article: metadata plus the resolved author, raw body, and generated TOC. */

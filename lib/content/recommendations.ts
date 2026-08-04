@@ -61,10 +61,11 @@ function scoreArticle(candidate: ArticleMeta, source: { category: CategorySlug; 
  * the article page) is a thin wrapper around this — this is the one place
  * to extend with smarter algorithms later.
  */
-export function getRecommendedArticles(source: ArticleMeta | Article, options: RecommendationOptions = {}): ArticleMeta[] {
+export async function getRecommendedArticles(source: ArticleMeta | Article, options: RecommendationOptions = {}): Promise<ArticleMeta[]> {
   const excludeSlug = options.excludeSlug ?? source.slug;
   const limit = options.limit ?? RELATED_ARTICLES_LIMIT;
-  const candidates = getAllArticleMeta().filter((article) => article.slug !== excludeSlug);
+  const all = await getAllArticleMeta();
+  const candidates = all.filter((article) => article.slug !== excludeSlug);
   if (candidates.length === 0) return [];
 
   const timestamps = candidates.map((article) => new Date(article.publishedAt).getTime());
@@ -88,11 +89,12 @@ export function getRecommendedArticles(source: ArticleMeta | Article, options: R
  * tag-overlapping category, so it nudges readers toward their next topic
  * instead of more of the same one.
  */
-export function getContinueLearningArticles(currentCategory: CategorySlug, excludeSlug: string, limit = 3): ArticleMeta[] {
+export async function getContinueLearningArticles(currentCategory: CategorySlug, excludeSlug: string, limit = 3): Promise<ArticleMeta[]> {
   const relatedCategories = RELATED_CATEGORIES[currentCategory] ?? [];
   if (relatedCategories.length === 0) return [];
 
-  return getAllArticleMeta()
+  const all = await getAllArticleMeta();
+  return all
     .filter((article) => article.slug !== excludeSlug && relatedCategories.includes(article.category))
     .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .slice(0, limit);

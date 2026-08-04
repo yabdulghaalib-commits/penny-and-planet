@@ -8,8 +8,9 @@ interface PageProps {
   params: { page: string };
 }
 
-export function generateStaticParams() {
-  return getStaticPageNumbers(getAllArticleMeta().length, ARTICLES_PER_PAGE).map((page) => ({
+export async function generateStaticParams() {
+  const all = await getAllArticleMeta();
+  return getStaticPageNumbers(all.length, ARTICLES_PER_PAGE).map((page) => ({
     page: String(page),
   }));
 }

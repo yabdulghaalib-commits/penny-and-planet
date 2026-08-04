@@ -6,8 +6,9 @@ import { paginate } from '@/lib/pagination';
 import { articlesIndexHref } from '@/lib/format';
 import { ARTICLES_PER_PAGE } from '@/lib/config/site';
 
-export function ArticlesIndexView({ page }: { page: number }) {
-  const result = paginate(getAllArticleMeta(), page, ARTICLES_PER_PAGE);
+export async function ArticlesIndexView({ page }: { page: number }) {
+  const all = await getAllArticleMeta();
+  const result = paginate(all, page, ARTICLES_PER_PAGE);
   if (page > 1 && page > result.totalPages) notFound();
 
   return (

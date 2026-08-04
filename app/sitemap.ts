@@ -8,8 +8,8 @@ import { collections } from '@/lib/data/collections';
 import { articleHref, authorHref, categoryHref, tagHref } from '@/lib/format';
 import { siteConfig } from '@/lib/config/site';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const articles = getAllArticleMeta();
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [articles, tags] = await Promise.all([getAllArticleMeta(), getAllTags()]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: siteConfig.url, changeFrequency: 'daily', priority: 1 },
@@ -52,7 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  const tagRoutes: MetadataRoute.Sitemap = getAllTags().map((tag) => ({
+  const tagRoutes: MetadataRoute.Sitemap = tags.map((tag) => ({
     url: `${siteConfig.url}${tagHref(tag.slug)}`,
     changeFrequency: 'weekly',
     priority: 0.4,

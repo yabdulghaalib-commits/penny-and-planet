@@ -14,16 +14,17 @@ import { categoryPageHref } from '@/lib/format';
 import { ARTICLES_PER_PAGE } from '@/lib/config/site';
 import type { CategorySlug } from '@/lib/types';
 
-export function CategoryArchiveView({ slug, page, sort }: { slug: string; page: number; sort?: string }) {
+export async function CategoryArchiveView({ slug, page, sort }: { slug: string; page: number; sort?: string }) {
   const category = categories.find((entry) => entry.slug === slug);
   if (!category) notFound();
 
   const sortOption = isArticleSortOption(sort) ? sort : 'recent';
-  const allInCategory = getAllArticleMeta().filter((article) => article.category === category.slug);
+  const all = await getAllArticleMeta();
+  const allInCategory = all.filter((article) => article.category === category.slug);
   const sorted = sortArticles(allInCategory, sortOption);
   const featured = page === 1 ? (sorted.find((article) => article.featured) ?? sorted[0]) : undefined;
 
-  const result = getArticlesByCategory(category.slug as CategorySlug, page, ARTICLES_PER_PAGE);
+  const result = await getArticlesByCategory(category.slug as CategorySlug, page, ARTICLES_PER_PAGE);
   if (page > 1 && page > result.totalPages) notFound();
   const pagedArticles = sortArticles(result.items, sortOption);
   const breadcrumbItems = [{ label: 'Home', href: '/' }, { label: category.name }];

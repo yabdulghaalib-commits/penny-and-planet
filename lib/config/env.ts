@@ -10,3 +10,16 @@ export const analyticsConfig = {
   googleSiteVerification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   vercelAnalyticsEnabled: process.env.NEXT_PUBLIC_VERCEL_ANALYTICS === 'true',
 } as const;
+
+/**
+ * Image search provider keys for the admin media picker. Each provider is
+ * independently optional — the search API only offers whichever providers
+ * have a key configured, and the picker's Upload/Library/manual-URL tabs
+ * work regardless. See .env.example.
+ */
+export const mediaProviderConfig = {
+  unsplashConfigured: Boolean(process.env.UNSPLASH_ACCESS_KEY),
+  pexelsConfigured: Boolean(process.env.PEXELS_API_KEY),
+  pixabayConfigured: Boolean(process.env.PIXABAY_API_KEY),
+  blobConfigured: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+} as const;

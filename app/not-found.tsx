@@ -7,8 +7,13 @@ import { NotFoundSearch } from '@/components/blog/NotFoundSearch';
 import { getLatestArticles } from '@/lib/content/query';
 import { categories } from '@/lib/data/categories';
 
-export default function NotFound() {
-  const recommended = getLatestArticles(3);
+export default async function NotFound() {
+  let recommended: Awaited<ReturnType<typeof getLatestArticles>> = [];
+  try {
+    recommended = await getLatestArticles(3);
+  } catch {
+    // A 404 page should never itself fail — worst case, just skip the "You Might Like These" section.
+  }
   const popularCategories = categories.slice(0, 6);
 
   return (

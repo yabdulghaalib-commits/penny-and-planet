@@ -354,3 +354,115 @@ A full audit pass across all 6 prior stages: consistency, dead code, broken link
 - [ ] Set the env vars in `.env.example` for whichever integrations you're ready to turn on (analytics, MailerLite, contact form backend) — everything works with none of them set
 - [ ] Update `siteConfig.url` in `lib/config/site.ts` if the production domain differs from the placeholder
 - [ ] **Deploying**: this is a standard Next.js App Router project — Vercel auto-detects it with zero configuration (`vercel.json` isn't needed). Push to GitHub, import the repo in Vercel, set env vars in the Vercel dashboard, deploy.
+
+## Stage 7 — Private admin dashboard
+
+Added a password-protected `/admin` area for creating, editing, and publishing articles, backed by a real Postgres database. This is the one stage that changes the site's core architecture: **articles now live in a database, not in `content/articles/*.mdx` files** — see "Why a database was necessary" below before assuming this was a small change.
+
+### Why a database was necessary
+
+Vercel's production filesystem is read-only at runtime. An admin dashboard that "saves" an article by writing to a `.mdx` file works in local dev but **silently cannot work in production** — there's no persistent, writable filesystem to write to. A real database is the only way for admin edits to actually take effect on the live site. Postgres (via Vercel's native integration) was the natural choice: it fits directly into the existing Vercel deployment with no extra hosting to manage, and it maps cleanly onto the article "table" the site already conceptually had (one row per article, with the exact same fields the old frontmatter had).
+
+### What changed as a result
+
+`lib/content/articles.ts` — the one file the Stage 2 README always said would need to change to move off the filesystem — now queries Postgres instead of reading `.mdx` files, but exports the exact same four function names with the exact same shapes. Every other file in `lib/content/query.ts`, `lib/content/recommendations.ts`, `lib/services/search.ts`, and every page/component that reads articles required only one change: those functions are now `async`, so callers `await` them. **No routes, URLs, design, or visual output changed** — this was a data-layer swap, not a rebuild. The original `.mdx` files remain in `content/articles/` untouched, as a historical backup; the running site no longer reads them.
+
+### Admin dashboard setup (required — do this before `/admin` will work)
+
+1. **Create the database.** Vercel dashboard → your project → Storage → Create Database → Postgres → connect it to this project. This automatically sets `POSTGRES_URL` (and related vars) in your Vercel project's environment variables.
+2. **Pull env vars locally**: `vercel env pull .env.local` (or copy `POSTGRES_URL` from the Vercel dashboard into `.env.local` by hand).
+3. **Add two more values to `.env.local`** (see `.env.example`):
+   - `ADMIN_SESSION_SECRET` — generate with `openssl rand -base64 32`
+   - `ADMIN_EMAIL` / `ADMIN_PASSWORD` — your login credentials (used once, by the seed script below, never read by the running app)
+4. **Install dependencies**: `npm install`
+5. **Create the database tables**: `npm run db:migrate`
+6. **Create your admin account**: `npm run db:seed-admin`
+7. **Import the 13 existing articles**: `npm run db:import-articles` (preserves every slug, category, date, image, and the raw content exactly — safe to re-run, skips anything already imported)
+8. **Add the same env vars to Vercel** (Project → Settings → Environment Variables): `ADMIN_SESSION_SECRET` at minimum. `POSTGRES_URL` is already there from step 1. You do not need to add `ADMIN_EMAIL`/`ADMIN_PASSWORD` to Vercel — those are only used locally by the one-time seed script.
+9. Deploy. Log in at `yoursite.com/admin/login`.
+
+**To reset a forgotten admin password later**: change `ADMIN_PASSWORD` in `.env.local`, run `npm run db:seed-admin` again.
+
+### Using the dashboard
+
+- `/admin/articles` — every article, any status, with inline publish/unpublish toggle and delete
+- `/admin/articles/new` / `/admin/articles/[id]/edit` — the article form: title, slug (auto-generated from title, editable), category, author, tags, featured image URL + alt text, excerpt, content, publish date, featured flag, SEO title/meta description, canonical URL, and Pinterest title/description/image
+- `/admin/articles/[id]/preview` — renders the article with the exact same components the public site uses, regardless of draft/published status
+- `/admin/settings` — change your password (requires current password)
+- Content is plain Markdown/MDX in a textarea, including the site's existing shortcodes (`<Callout>`, `<PullQuote>`, `<KeyTakeaways>`, etc.) — matching how the original articles were authored, not a WYSIWYG editor. Use Preview to check rendering before publishing.
+- "Manage categories" is implemented as choosing from the site's existing 13 categories, not creating new ones — adding a wholly new category also means a new archive page, new nav/footer entries, and new static params, which is a bigger structural change than this stage's scope. Ask for that explicitly if you want it.
+
+### Security
+
+- No public registration, ever — the only way an admin account is created is the `db:seed-admin` script, run locally with access to your env vars
+- Passwords are hashed with bcrypt (12 rounds), never stored or logged in plain text
+- Sessions are signed, HTTP-only, secure cookies (JWT via `jose`), verified on every request to `/admin/*` and `/api/admin/*` by `middleware.ts`
+- The login endpoint returns an identical error for "no such account" and "wrong password," so it can't be used to discover valid admin emails
+- `ADMIN_SESSION_SECRET` and `ADMIN_PASSWORD` are never committed — `.env*.local` is gitignored, and Vercel env vars are encrypted at rest
+
+### Pinterest and advertising
+
+Pinterest fields (title, description, image) are stored per-article for your own reference when manually creating a Pin — nothing in this codebase calls the Pinterest API or publishes anything automatically. AdSense/ad-network compatibility is unaffected: no ad code was added, and nothing about page structure, load behavior, or content changed in a way that would affect ad review.
+
+### New dependencies
+
+`@vercel/postgres` (database), `bcryptjs` (password hashing, pure JS — safe for serverless), `jose` (JWT sessions, Edge-runtime compatible so it works in middleware), `tsx` + `dotenv` (dev-only, for running the setup scripts).
+
+## Stage 9 — Rich text editor & image management for the admin dashboard
+
+Upgraded the admin article editor from a plain textarea to a rich text editor with Word/Google Docs paste support, DOCX import, and multi-provider image search, a reusable media library, and device upload. **The admin login, database, APIs, article workflow, and every public-facing page are unchanged** — this stage only replaced what's inside the content field of the existing article form.
+
+### What changed
+
+- `components/admin/editor/ArticleContentEditor.tsx` (new) — replaces the plain `<textarea>` for the article content field in `ArticleForm.tsx`. Everything else in that form (title, slug, category, dates, SEO fields, etc.) is untouched.
+- New `media_library` database table (`lib/db/schema.sql`) — re-run `npm run db:migrate` on an existing database to add it; the migration is idempotent, so this is safe even on a database that's already been through Stage 8's setup.
+- New API routes, all protected by the same `middleware.ts` that already guards `/admin`: `/api/admin/media/search`, `/api/admin/media` (list/save), `/api/admin/media/upload`, `/api/admin/import/docx`.
+
+### The editor: Rich Text and Raw Markdown modes
+
+The article content field now has two modes, toggled at the top of the editor:
+
+- **Rich Text** — a genuine WYSIWYG editor (built on Tiptap) with a toolbar for headings, bold/italic/strikethrough, lists, blockquotes, links, tables, and images. This is where paste-from-Word/Google-Docs and DOCX import land.
+- **Raw Markdown** — the original plain-text view, unchanged from Stage 8.
+
+**Why two modes, not just one:** the site's articles use custom shortcodes (`<Callout>`, `<PullQuote>`, `<KeyTakeaways>`, `<Faq>`, etc.) that aren't part of standard Markdown or HTML — a generic rich text editor has no visual representation for them and could corrupt them on save. Given your explicit requirement that pasted/existing content must not be silently altered, the editor defaults to **Raw Markdown when opening any article that already has content**, and to **Rich Text for a brand-new, empty article**. You can switch modes manually any time; if an article contains a shortcode, the editor shows a visible warning before you switch it into Rich Text, so you're never surprised. This is a deliberate safety choice, not a limitation I ran out of time for.
+
+**Word/Google Docs paste**: works directly in Rich Text mode. Tiptap (built on ProseMirror) parses the rich HTML that Word and Google Docs put on the clipboard and maps headings, bold, italic, lists, links, blockquotes, and tables onto the editor's schema automatically. Nothing needed configuring beyond including the matching extensions (which are all installed).
+
+**One honest technical note**: any editor that stores content as Markdown text works by converting your document to and from a structured model on save. That means round-tripping through Rich Text mode will normalize formatting details (consistent `##` heading markers, consistent `-` bullets, etc.) even though the actual content, structure, and meaning are fully preserved. "Does not alter your content" is true in the sense that matters (nothing is lost, rewritten, or reworded), but it isn't literally byte-for-byte if you switch modes back and forth. Raw Markdown mode has zero risk of this, since it's the exact same plain-text field as before.
+
+### DOCX import
+
+The "Import from Word (.docx)" button (next to the mode toggle) uploads a `.docx` file, converts it via `mammoth` (Word → HTML) and `turndown` (HTML → Markdown), and loads the result straight into Rich Text mode for further editing before you publish. Works from a phone's file picker. Old `.doc` (pre-2007 Word format) isn't supported — only `.docx`.
+
+### Image management
+
+- **Search**: the "Choose image" button (on the featured image field, the Pinterest image field, and the toolbar's image button) opens a picker with Search / Library / Upload tabs. Search queries whichever of Unsplash, Pexels, or Pixabay have an API key configured; providers without a key show a clear message instead of erroring.
+- **Alt text**: prompted for whenever you pick a search result or upload, before the image is inserted. Images already placed in the article body can have their alt text edited by hovering and clicking "Edit alt text" directly on the image.
+- **Media library**: every image you've ever searched-and-picked, uploaded, or pasted a URL for is saved and reappears in the Library tab for reuse, no need to re-search or re-upload.
+- **Manual upload**: the Upload tab's file input has `capture="environment"`, which opens the camera directly on a phone (or the normal file picker on desktop). Requires Vercel Blob to be configured (see below); without it, this tab shows a clear setup message rather than failing silently, and Search/Library/paste-a-URL remain fully available.
+- **Fallback**: every picker also has a plain "paste an image URL" field, matching how featured images already worked before this stage.
+
+### API keys and setup required
+
+All optional, independently. Nothing breaks if none are set; the picker just has fewer active tabs.
+
+| To enable... | Set this env var | Get a key at |
+| --- | --- | --- |
+| Unsplash search | `UNSPLASH_ACCESS_KEY` | unsplash.com/oauth/applications (free) |
+| Pexels search | `PEXELS_API_KEY` | pexels.com/api (free) |
+| Pixabay search | `PIXABAY_API_KEY` | pixabay.com/api/docs (free) |
+| Device photo upload | `BLOB_READ_WRITE_TOKEN` | Vercel dashboard → Storage → Create Database → Blob (auto-set once connected, same pattern as `POSTGRES_URL`) |
+
+After adding any of these to `.env.local` and to your Vercel project's environment variables, redeploy (or restart `next dev` locally) to pick them up.
+
+### New dependencies
+
+`@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`, and the Tiptap link/image/table/placeholder extensions (the rich text editor); `tiptap-markdown` (Markdown in/out, keeping the database's content column exactly as-is); `mammoth` + `turndown` + `turndown-plugin-gfm` (DOCX → Markdown import); `@vercel/blob` (device image upload).
+
+### Confirmation
+
+- Database structure: only additive (`media_library` is a new table; `articles` is untouched). Re-running `npm run db:migrate` is safe and required to pick up the new table.
+- Authentication: `middleware.ts`, session handling, login, and password change are completely untouched — every new admin API route sits behind the same protection.
+- Article workflow: create/edit/delete/preview/publish-unpublish all work exactly as in Stage 8. The only change is what's inside the content field.
+- SEO, URLs, design, and the public site: nothing changed. This stage only touched files under `components/admin/`, `app/api/admin/`, `lib/media/`, and `lib/db/`, plus one new table.

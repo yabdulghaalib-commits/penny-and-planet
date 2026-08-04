@@ -26,11 +26,11 @@ export function generateMetadata({ params }: CollectionPageProps): Metadata {
   };
 }
 
-export default function CollectionPage({ params }: CollectionPageProps) {
+export default async function CollectionPage({ params }: CollectionPageProps) {
   const collection = getCollectionBySlug(params.slug);
   if (!collection) notFound();
 
-  const articles = getCollectionArticles(collection);
+  const articles = await getCollectionArticles(collection);
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
     { label: 'Collections', href: '/collections' },

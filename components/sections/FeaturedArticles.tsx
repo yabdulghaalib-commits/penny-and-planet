@@ -2,8 +2,8 @@ import { Container } from '@/components/ui/Container';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { getFeaturedArticles } from '@/lib/content/query';
 
-export function FeaturedArticles() {
-  const featured = getFeaturedArticles();
+export async function FeaturedArticles() {
+  const featured = await getFeaturedArticles();
 
   if (featured.length === 0) return null;
 

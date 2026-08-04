@@ -11,14 +11,17 @@ interface PageProps {
   searchParams: { sort?: string };
 }
 
-export function generateStaticParams() {
-  return categories.flatMap((category) => {
-    const total = getArticlesByCategory(category.slug, 1, ARTICLES_PER_PAGE).totalItems;
-    return getStaticPageNumbers(total, ARTICLES_PER_PAGE).map((page) => ({
-      slug: category.slug,
-      page: String(page),
-    }));
-  });
+export async function generateStaticParams() {
+  const perCategoryParams = await Promise.all(
+    categories.map(async (category) => {
+      const total = (await getArticlesByCategory(category.slug, 1, ARTICLES_PER_PAGE)).totalItems;
+      return getStaticPageNumbers(total, ARTICLES_PER_PAGE).map((page) => ({
+        slug: category.slug,
+        page: String(page),
+      }));
+    }),
+  );
+  return perCategoryParams.flat();
 }
 
 export function generateMetadata({ params }: PageProps): Metadata {

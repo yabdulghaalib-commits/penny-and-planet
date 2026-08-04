@@ -19,8 +19,8 @@ const TrendingIcon = () => (
 );
 
 /** Same pattern as PopularArticles — backed by getTrendingArticles, ready to swap in real analytics later without call-site changes. */
-export function TrendingArticles({ variant = 'grid', limit = variant === 'compact' ? 4 : 6 }: TrendingArticlesProps) {
-  const articles = getTrendingArticles(limit);
+export async function TrendingArticles({ variant = 'grid', limit = variant === 'compact' ? 4 : 6 }: TrendingArticlesProps) {
+  const articles = await getTrendingArticles(limit);
   if (articles.length === 0) return null;
 
   if (variant === 'compact') {

@@ -18,8 +18,8 @@ interface PopularArticlesProps {
  * lib/content/query.ts — swapping in real pageview data later means this
  * component never has to change.
  */
-export function PopularArticles({ variant = 'grid', limit = variant === 'compact' ? 4 : 6, title = 'Popular Articles' }: PopularArticlesProps) {
-  const articles = getPopularArticles(limit);
+export async function PopularArticles({ variant = 'grid', limit = variant === 'compact' ? 4 : 6, title = 'Popular Articles' }: PopularArticlesProps) {
+  const articles = await getPopularArticles(limit);
   if (articles.length === 0) return null;
 
   if (variant === 'compact') {

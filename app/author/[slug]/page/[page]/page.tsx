@@ -9,14 +9,17 @@ interface PageProps {
   params: { slug: string; page: string };
 }
 
-export function generateStaticParams() {
-  return getAllAuthors().flatMap((author) => {
-    const total = getArticlesByAuthor(author.slug, 1, ARTICLES_PER_PAGE).totalItems;
-    return getStaticPageNumbers(total, ARTICLES_PER_PAGE).map((page) => ({
-      slug: author.slug,
-      page: String(page),
-    }));
-  });
+export async function generateStaticParams() {
+  const perAuthorParams = await Promise.all(
+    getAllAuthors().map(async (author) => {
+      const total = (await getArticlesByAuthor(author.slug, 1, ARTICLES_PER_PAGE)).totalItems;
+      return getStaticPageNumbers(total, ARTICLES_PER_PAGE).map((page) => ({
+        slug: author.slug,
+        page: String(page),
+      }));
+    }),
+  );
+  return perAuthorParams.flat();
 }
 
 export function generateMetadata({ params }: PageProps): Metadata {

@@ -10,7 +10,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/collections' },
 };
 
-export default function CollectionsIndexPage() {
+export default async function CollectionsIndexPage() {
+  const counts = await Promise.all(collections.map((collection) => getCollectionArticles(collection)));
+
   return (
     <div className="py-16 lg:py-20">
       <Container>
@@ -24,11 +26,11 @@ export default function CollectionsIndexPage() {
         </div>
 
         <div className="mx-auto mt-12 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {collections.map((collection) => (
+          {collections.map((collection, index) => (
             <CollectionCard
               key={collection.slug}
               collection={collection}
-              articleCount={getCollectionArticles(collection).length}
+              articleCount={counts[index]?.length ?? 0}
             />
           ))}
         </div>

@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/Button';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { getLatestArticles } from '@/lib/content/query';
 
-export function LatestArticles() {
-  const latest = getLatestArticles(6);
+export async function LatestArticles() {
+  const latest = await getLatestArticles(6);
 
   return (
     <section aria-labelledby="latest-articles-heading" className="bg-white py-16 lg:py-24">

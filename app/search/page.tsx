@@ -14,9 +14,10 @@ export const metadata: Metadata = {
   alternates: { canonical: '/search' },
 };
 
-export default function SearchPage() {
-  const tags = getAllTags();
-  const suggestedArticles = getPopularArticles(4).map((article) => ({
+export default async function SearchPage() {
+  const tags = await getAllTags();
+  const popular = await getPopularArticles(4);
+  const suggestedArticles = popular.map((article) => ({
     title: article.title,
     href: articleHref(article.category, article.slug),
   }));

@@ -3,11 +3,11 @@ import { searchArticles } from '@/lib/services/search';
 import { isArticleSortOption } from '@/lib/content/sorting';
 import type { CategorySlug } from '@/lib/types';
 
-export function GET(request: NextRequest) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const sortParam = searchParams.get('sort');
 
-  const results = searchArticles({
+  const results = await searchArticles({
     query: searchParams.get('q') ?? undefined,
     category: (searchParams.get('category') as CategorySlug | null) ?? undefined,
     tag: searchParams.get('tag') ?? undefined,

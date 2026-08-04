@@ -3,7 +3,7 @@ import { getAuthorBySlugOrFallback } from '@/lib/content/authors';
 import { toTagSlug } from '@/lib/content/query';
 import { sortArticles, type ArticleSortOption } from '@/lib/content/sorting';
 import { getCategoryName, articleHref } from '@/lib/format';
-import type { CategorySlug } from '@/lib/types';
+import type { ArticleMeta, CategorySlug } from '@/lib/types';
 
 export interface SearchResultItem {
   slug: string;
@@ -37,7 +37,7 @@ export interface SearchIndexEntry {
   tags: string[];
 }
 
-function toSearchResultItem(article: ReturnType<typeof getAllArticleMeta>[number]): SearchResultItem {
+function toSearchResultItem(article: ArticleMeta): SearchResultItem {
   return {
     slug: article.slug,
     title: article.title,
@@ -61,8 +61,8 @@ function toSearchResultItem(article: ReturnType<typeof getAllArticleMeta>[number
  * Search page's requirements call for — server-side, so the client never
  * has to download the full article index to filter it.
  */
-export function searchArticles(options: SearchOptions = {}): SearchResultItem[] {
-  let results = getAllArticleMeta();
+export async function searchArticles(options: SearchOptions = {}): Promise<SearchResultItem[]> {
+  let results = await getAllArticleMeta();
 
   if (options.category) {
     results = results.filter((article) => article.category === options.category);
@@ -102,8 +102,9 @@ export function searchArticles(options: SearchOptions = {}): SearchResultItem[] 
  * palette, for example) can fetch `/api/search-index` and use it however
  * it likes, without this module needing to know about that UI.
  */
-export function buildSearchIndex(): SearchIndexEntry[] {
-  return searchArticles().map((item) => ({
+export async function buildSearchIndex(): Promise<SearchIndexEntry[]> {
+  const items = await searchArticles();
+  return items.map((item) => ({
     title: item.title,
     excerpt: item.excerpt,
     url: item.url,

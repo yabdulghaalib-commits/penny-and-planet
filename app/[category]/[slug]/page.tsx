@@ -29,21 +29,22 @@ interface ArticlePageProps {
   params: { category: string; slug: string };
 }
 
-export function generateStaticParams() {
-  return getAllArticleMeta().map((article) => ({
+export async function generateStaticParams() {
+  const all = await getAllArticleMeta();
+  return all.map((article) => ({
     category: article.category,
     slug: article.slug,
   }));
 }
 
-function loadArticleOrNotFound(params: ArticlePageProps['params']) {
-  const article = getFullArticleBySlug(params.slug);
+async function loadArticleOrNotFound(params: ArticlePageProps['params']) {
+  const article = await getFullArticleBySlug(params.slug);
   if (!article || article.category !== params.category) return null;
   return article;
 }
 
-export function generateMetadata({ params }: ArticlePageProps): Metadata {
-  const article = loadArticleOrNotFound(params);
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
+  const article = await loadArticleOrNotFound(params);
   if (!article) return {};
 
   const url = `${siteConfig.url}${articleHref(article.category, article.slug)}`;
@@ -72,12 +73,12 @@ export function generateMetadata({ params }: ArticlePageProps): Metadata {
   };
 }
 
-export default function ArticlePage({ params }: ArticlePageProps) {
-  const article = loadArticleOrNotFound(params);
+export default async function ArticlePage({ params }: ArticlePageProps) {
+  const article = await loadArticleOrNotFound(params);
   if (!article) notFound();
 
-  const related = getRelatedArticles(article);
-  const { previous, next } = getAdjacentArticles(article.slug);
+  const related = await getRelatedArticles(article);
+  const { previous, next } = await getAdjacentArticles(article.slug);
   const resource = article.downloadableResourceSlug ? getResourceBySlug(article.downloadableResourceSlug) : undefined;
   const articleUrl = `${siteConfig.url}${articleHref(article.category, article.slug)}`;
   const breadcrumbItems = buildArticleBreadcrumbs(article.category, article.title);

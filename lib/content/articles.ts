@@ -1,110 +1,54 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import { cache } from 'react';
-import matter from 'gray-matter';
-import { ARTICLES_DIR } from '@/lib/constants';
-import { articleFrontmatterSchema } from '@/lib/content/schema';
-import { calculateReadingTime } from '@/lib/content/reading-time';
-import type { ArticleMeta, CategorySlug } from '@/lib/types';
-
-interface RawArticleFile {
-  filename: string;
-  slug: string;
-  frontmatter: ReturnType<typeof articleFrontmatterSchema.parse>;
-  rawContent: string;
-}
-
-/**
- * Reads and validates every `.mdx`/`.md` file in `content/articles`. Wrapped
- * in React's `cache()` so, within a single render/build pass, the
- * filesystem is only walked once no matter how many pages call into this
- * module (homepage, category pages, sitemap, related posts, etc.).
- */
-const readAllArticleFiles = cache((): RawArticleFile[] => {
-  if (!fs.existsSync(ARTICLES_DIR)) return [];
-
-  const filenames = fs.readdirSync(ARTICLES_DIR).filter((name) => /\.mdx?$/.test(name));
-
-  return filenames.map((filename) => {
-    const filePath = path.join(ARTICLES_DIR, filename);
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    const { data, content } = matter(fileContents);
-
-    const parsed = articleFrontmatterSchema.safeParse(data);
-    if (!parsed.success) {
-      throw new Error(
-        `Invalid frontmatter in content/articles/${filename}:\n${parsed.error.issues
-          .map((issue) => `  - ${issue.path.join('.')}: ${issue.message}`)
-          .join('\n')}`,
-      );
-    }
-
-    return {
-      filename,
-      slug: filename.replace(/\.mdx?$/, ''),
-      frontmatter: parsed.data,
-      rawContent: content,
-    };
-  });
-});
-
-function toArticleMeta(file: RawArticleFile): ArticleMeta {
-  const fm = file.frontmatter;
-  return {
-    slug: file.slug,
-    title: fm.title,
-    metaTitle: fm.metaTitle,
-    metaDescription: fm.metaDescription,
-    excerpt: fm.excerpt,
-    featuredImageUrl: fm.featuredImage,
-    featuredImageAlt: fm.featuredImageAlt,
-    category: fm.category as CategorySlug,
-    tags: fm.tags,
-    authorSlug: fm.author,
-    publishedAt: fm.publishedAt,
-    updatedAt: fm.updatedAt,
-    readingTimeMinutes: fm.readingTimeMinutes ?? calculateReadingTime(file.rawContent),
-    featured: fm.featured,
-    draft: fm.draft,
-    publishAt: fm.publishAt,
-    canonicalUrl: fm.canonicalUrl,
-    ogImageUrl: fm.ogImage,
-    downloadableResourceSlug: fm.downloadableResource,
-    faqItems: fm.faqItems,
-  };
-}
-
-function isPublished(meta: ArticleMeta): boolean {
-  if (meta.draft) return false;
-  if (meta.publishAt && new Date(meta.publishAt).getTime() > Date.now()) return false;
-  return true;
-}
+import { getPublishedArticleRows, getAllArticleRows, getArticleRowBySlug, rowToArticleMeta } from '@/lib/db/articles';
+import type { ArticleMeta } from '@/lib/types';
 
 /**
  * All published article metadata (excludes drafts and posts scheduled for
  * the future). This is what every listing/query helper should build on.
+ *
+ * This is the one module that talks to the database directly — everything
+ * downstream (lib/content/query.ts, every page, the sitemap, search) only
+ * ever calls these four functions. That's what made the Stage 6 admin
+ * dashboard possible without touching the rest of the content layer: this
+ * file used to read content/articles/*.mdx from the filesystem; it now
+ * reads the `articles` table in Postgres instead, with the exact same
+ * exported shape. See scripts/migrate-articles.ts for the one-time import
+ * of the original MDX files into the database.
+ *
+ * Wrapped in React's `cache()` so, within a single render/build pass, the
+ * database is only queried once no matter how many pages call into this
+ * module (homepage, category pages, sitemap, related posts, etc.).
  */
-export const getAllArticleMeta = cache((): ArticleMeta[] => {
-  return readAllArticleFiles()
-    .map(toArticleMeta)
-    .filter(isPublished)
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+export const getAllArticleMeta = cache(async (): Promise<ArticleMeta[]> => {
+  const rows = await getPublishedArticleRows();
+  return rows.map(rowToArticleMeta);
 });
 
 /**
- * Metadata for every article file regardless of draft/scheduled status —
- * intended for internal tooling only (e.g. a future preview mode), never
- * for public listings.
+ * Metadata for every article regardless of draft/scheduled status —
+ * intended for internal/admin tooling only, never for public listings.
  */
-export const getAllArticleMetaIncludingUnpublished = cache((): ArticleMeta[] => {
-  return readAllArticleFiles().map(toArticleMeta);
+export const getAllArticleMetaIncludingUnpublished = cache(async (): Promise<ArticleMeta[]> => {
+  const rows = await getAllArticleRows();
+  return rows.map(rowToArticleMeta);
 });
 
-export function getArticleMetaBySlug(slug: string): ArticleMeta | undefined {
-  return getAllArticleMeta().find((article) => article.slug === slug);
-}
+export const getArticleMetaBySlug = cache(async (slug: string): Promise<ArticleMeta | undefined> => {
+  const row = await getArticleRowBySlug(slug);
+  if (!row) return undefined;
+  // A row exists but might be a draft or scheduled for the future — the
+  // public site should treat that the same as "not found".
+  const meta = rowToArticleMeta(row);
+  if (row.status === 'draft') return undefined;
+  if (row.publish_at && new Date(row.publish_at).getTime() > Date.now()) return undefined;
+  return meta;
+});
 
-/** Raw MDX body for a single article, looked up by slug (used by the article page to compile MDX). */
-export function getArticleRawContentBySlug(slug: string): string | undefined {
-  return readAllArticleFiles().find((file) => file.slug === slug)?.rawContent;
-}
+/** Raw MDX body for a single published article, looked up by slug (used by the article page to compile MDX). */
+export const getArticleRawContentBySlug = cache(async (slug: string): Promise<string | undefined> => {
+  const row = await getArticleRowBySlug(slug);
+  if (!row) return undefined;
+  if (row.status === 'draft') return undefined;
+  if (row.publish_at && new Date(row.publish_at).getTime() > Date.now()) return undefined;
+  return row.content;
+});

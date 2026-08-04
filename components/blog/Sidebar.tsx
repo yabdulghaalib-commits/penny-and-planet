@@ -27,9 +27,10 @@ function SidebarBlock({ title, children }: SidebarBlockProps) {
  * part of this (e.g. just Popular Articles) should use that component
  * directly instead of the full Sidebar.
  */
-export function Sidebar() {
-  const categoriesWithCounts = getCategoriesWithCounts();
-  const tags = getAllTags().slice(0, 16);
+export async function Sidebar() {
+  const categoriesWithCounts = await getCategoriesWithCounts();
+  const allTags = await getAllTags();
+  const tags = allTags.slice(0, 16);
   const resources = getAllResources().slice(0, 3);
 
   return (

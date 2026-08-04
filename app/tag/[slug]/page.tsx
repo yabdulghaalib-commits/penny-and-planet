@@ -7,12 +7,14 @@ interface PageProps {
   searchParams: { sort?: string };
 }
 
-export function generateStaticParams() {
-  return getAllTags().map((tag) => ({ slug: tag.slug }));
+export async function generateStaticParams() {
+  const tags = await getAllTags();
+  return tags.map((tag) => ({ slug: tag.slug }));
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const tag = getAllTags().find((entry) => entry.slug === params.slug);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const tags = await getAllTags();
+  const tag = tags.find((entry) => entry.slug === params.slug);
   if (!tag) return {};
 
   return {

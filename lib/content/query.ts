@@ -21,9 +21,9 @@ function toTagName(slug: string): string {
 }
 
 /** Resolves lightweight metadata into a full Article: author, raw MDX body, and generated table of contents. */
-export function getFullArticleBySlug(slug: string): Article | undefined {
-  const meta = getArticleMetaBySlug(slug);
-  const rawContent = getArticleRawContentBySlug(slug);
+export async function getFullArticleBySlug(slug: string): Promise<Article | undefined> {
+  const meta = await getArticleMetaBySlug(slug);
+  const rawContent = await getArticleRawContentBySlug(slug);
   if (!meta || rawContent === undefined) return undefined;
 
   const { authorSlug, ...rest } = meta;
@@ -35,32 +35,36 @@ export function getFullArticleBySlug(slug: string): Article | undefined {
   };
 }
 
-export function getFeaturedArticles(limit?: number): ArticleMeta[] {
-  const featured = getAllArticleMeta().filter((article) => article.featured);
+export async function getFeaturedArticles(limit?: number): Promise<ArticleMeta[]> {
+  const all = await getAllArticleMeta();
+  const featured = all.filter((article) => article.featured);
   return typeof limit === 'number' ? featured.slice(0, limit) : featured;
 }
 
-export function getLatestArticles(limit = 6): ArticleMeta[] {
-  // getAllArticleMeta() is already sorted newest → oldest.
-  return getAllArticleMeta().slice(0, limit);
+export async function getLatestArticles(limit = 6): Promise<ArticleMeta[]> {
+  const all = await getAllArticleMeta(); // already sorted newest → oldest
+  return all.slice(0, limit);
 }
 
-export function getArticlesByCategory(
+export async function getArticlesByCategory(
   category: CategorySlug,
   page = 1,
   perPage: number,
-): PaginatedResult<ArticleMeta> {
-  const matches = getAllArticleMeta().filter((article) => article.category === category);
+): Promise<PaginatedResult<ArticleMeta>> {
+  const all = await getAllArticleMeta();
+  const matches = all.filter((article) => article.category === category);
   return paginate(matches, page, perPage);
 }
 
-export function getArticlesByTag(tagSlug: string, page = 1, perPage: number): PaginatedResult<ArticleMeta> {
-  const matches = getAllArticleMeta().filter((article) => article.tags.some((tag) => toTagSlug(tag) === tagSlug));
+export async function getArticlesByTag(tagSlug: string, page = 1, perPage: number): Promise<PaginatedResult<ArticleMeta>> {
+  const all = await getAllArticleMeta();
+  const matches = all.filter((article) => article.tags.some((tag) => toTagSlug(tag) === tagSlug));
   return paginate(matches, page, perPage);
 }
 
-export function getArticlesByAuthor(authorSlug: string, page = 1, perPage: number): PaginatedResult<ArticleMeta> {
-  const matches = getAllArticleMeta().filter((article) => article.authorSlug === authorSlug);
+export async function getArticlesByAuthor(authorSlug: string, page = 1, perPage: number): Promise<PaginatedResult<ArticleMeta>> {
+  const all = await getAllArticleMeta();
+  const matches = all.filter((article) => article.authorSlug === authorSlug);
   return paginate(matches, page, perPage);
 }
 
@@ -71,17 +75,17 @@ export function getArticlesByAuthor(authorSlug: string, page = 1, perPage: numbe
  * having call sites import the engine directly) so the article page never
  * has to change if the engine's internals evolve.
  */
-export function getRelatedArticles(article: ArticleMeta | Article, limit = RELATED_ARTICLES_LIMIT): ArticleMeta[] {
+export async function getRelatedArticles(article: ArticleMeta | Article, limit = RELATED_ARTICLES_LIMIT): Promise<ArticleMeta[]> {
   return getRecommendedArticles(article, { limit });
 }
 
 /** Thin pass-through so call sites can reach the full recommendation engine (e.g. with reader-interest signals) without a separate import. */
-export function getRecommendations(article: ArticleMeta | Article, options?: RecommendationOptions): ArticleMeta[] {
+export async function getRecommendations(article: ArticleMeta | Article, options?: RecommendationOptions): Promise<ArticleMeta[]> {
   return getRecommendedArticles(article, options);
 }
 
-export function getAdjacentArticles(slug: string): { previous: ArticleMeta | null; next: ArticleMeta | null } {
-  const all = getAllArticleMeta(); // newest → oldest
+export async function getAdjacentArticles(slug: string): Promise<{ previous: ArticleMeta | null; next: ArticleMeta | null }> {
+  const all = await getAllArticleMeta(); // newest → oldest
   const index = all.findIndex((article) => article.slug === slug);
   if (index === -1) return { previous: null, next: null };
 
@@ -92,9 +96,10 @@ export function getAdjacentArticles(slug: string): { previous: ArticleMeta | nul
   };
 }
 
-export function getAllTags(): Tag[] {
+export async function getAllTags(): Promise<Tag[]> {
+  const all = await getAllArticleMeta();
   const slugs = new Set<string>();
-  for (const article of getAllArticleMeta()) {
+  for (const article of all) {
     for (const tag of article.tags) slugs.add(toTagSlug(tag));
   }
   return Array.from(slugs)
@@ -102,8 +107,8 @@ export function getAllTags(): Tag[] {
     .map((slug) => ({ slug, name: toTagName(slug) }));
 }
 
-export function getCategoriesWithCounts() {
-  const all = getAllArticleMeta();
+export async function getCategoriesWithCounts() {
+  const all = await getAllArticleMeta();
   return categories.map((category) => ({
     ...category,
     articleCount: all.filter((article) => article.category === category.slug).length,
@@ -115,7 +120,7 @@ export function getCategoriesWithCounts() {
  * its own function so a future stage can back it with a real "editor's
  * pick" flag or a curated list without touching call sites.
  */
-export function getEditorsPicks(limit = 3): ArticleMeta[] {
+export async function getEditorsPicks(limit = 3): Promise<ArticleMeta[]> {
   return getFeaturedArticles(limit);
 }
 
@@ -124,7 +129,7 @@ export function getEditorsPicks(limit = 3): ArticleMeta[] {
  * is wired up. Falls back to latest articles so the call site never has to
  * change when real popularity data arrives.
  */
-export function getPopularArticles(limit = 6): ArticleMeta[] {
+export async function getPopularArticles(limit = 6): Promise<ArticleMeta[]> {
   return getLatestArticles(limit);
 }
 
@@ -135,18 +140,19 @@ export function getPopularArticles(limit = 6): ArticleMeta[] {
  * (which proxies on recency) so the two never render an identical list
  * when shown near each other.
  */
-export function getTrendingArticles(limit = 6): ArticleMeta[] {
-  const all = getAllArticleMeta();
+export async function getTrendingArticles(limit = 6): Promise<ArticleMeta[]> {
+  const all = await getAllArticleMeta();
   const featured = all.filter((article) => article.featured);
   const rest = all.filter((article) => !article.featured);
   return [...featured, ...rest].slice(0, limit);
 }
 
 /** Resolves a collection's rule (categories and/or tags) against current content — automatically stays current as articles are published. */
-export function getCollectionArticles(collection: Collection, limit?: number): ArticleMeta[] {
+export async function getCollectionArticles(collection: Collection, limit?: number): Promise<ArticleMeta[]> {
   const { categories: ruleCategories, tags: ruleTags } = collection.rule;
+  const all = await getAllArticleMeta();
 
-  const matches = getAllArticleMeta().filter((article) => {
+  const matches = all.filter((article) => {
     const categoryMatch = ruleCategories?.includes(article.category) ?? false;
     const tagMatch = ruleTags?.some((ruleTag) => article.tags.some((tag) => toTagSlug(tag) === toTagSlug(ruleTag))) ?? false;
     return categoryMatch || tagMatch;
@@ -161,6 +167,6 @@ export function getCollectionArticles(collection: Collection, limit?: number): A
  * for now rather than guessing, so call sites can safely render "nothing"
  * until real seasonal content is authored.
  */
-export function getSeasonalArticles(): ArticleMeta[] {
+export async function getSeasonalArticles(): Promise<ArticleMeta[]> {
   return [];
 }

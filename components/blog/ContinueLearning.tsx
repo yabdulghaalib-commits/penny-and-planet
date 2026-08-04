@@ -10,8 +10,8 @@ interface ContinueLearningProps {
 }
 
 /** Suggests articles from topically-related categories (see lib/data/category-relations.ts) rather than more of the same topic. */
-export function ContinueLearning({ category, excludeSlug, limit = 3 }: ContinueLearningProps) {
-  const articles = getContinueLearningArticles(category, excludeSlug, limit);
+export async function ContinueLearning({ category, excludeSlug, limit = 3 }: ContinueLearningProps) {
+  const articles = await getContinueLearningArticles(category, excludeSlug, limit);
   if (articles.length === 0) return null;
 
   return (
