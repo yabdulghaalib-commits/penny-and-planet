@@ -127,7 +127,9 @@ export async function createArticleRow(input: ArticleInput): Promise<ArticleRow>
     ) VALUES (
       ${input.slug}, ${input.title}, ${input.metaTitle ?? null}, ${input.metaDescription ?? null},
       ${input.excerpt}, ${input.featuredImageUrl}, ${input.featuredImageAlt}, ${input.category},
-      ${input.tags}, ${input.authorSlug}, ${input.content}, ${input.status}, ${input.featured},
+      ARRAY(
+  SELECT jsonb_array_elements_text(${JSON.stringify(input.tags)}::jsonb)
+), ${input.authorSlug}, ${input.content}, ${input.status}, ${input.featured},
       ${input.readingTimeMinutes ?? null}, ${input.publishedAt ?? null}, ${input.updatedAt ?? null},
       ${input.publishAt ?? null}, ${input.canonicalUrl ?? null}, ${input.ogImageUrl ?? null},
       ${input.downloadableResourceSlug ?? null},
