@@ -154,7 +154,9 @@ export async function updateArticleRow(id: number, input: ArticleInput): Promise
       featured_image_url = ${input.featuredImageUrl},
       featured_image_alt = ${input.featuredImageAlt},
       category = ${input.category},
-      tags = ${input.tags},
+      tags = ARRAY(
+  SELECT jsonb_array_elements_text(${JSON.stringify(input.tags)}::jsonb)
+),
       author_slug = ${input.authorSlug},
       content = ${input.content},
       status = ${input.status},
